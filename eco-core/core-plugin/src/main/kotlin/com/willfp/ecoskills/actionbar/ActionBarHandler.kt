@@ -115,7 +115,9 @@ class ActionBarHandler(
     internal fun startTicking() {
         plugin.scheduler.runTimer(5, 5) {
             for (player in Bukkit.getOnlinePlayers()) {
-                trySendMessage(player)
+                plugin.scheduler.run(player.location) {
+                    trySendMessage(player)
+                }
             }
         }
     }

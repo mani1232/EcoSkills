@@ -31,7 +31,7 @@ class GainXPDisplay(
         val player = event.player
 
         // Run next tick because level up calls before xp is added
-        plugin.scheduler.run {
+        plugin.scheduler.run(player.location) {
             handleActionBar(event)
             handleBossBar(event)
 

@@ -45,7 +45,7 @@ class EffectAddStatTemporarily(
             )
         )
 
-        plugin.scheduler.runLater(config.getIntFromExpression("duration", data).toLong()) {
+        plugin.scheduler.runLater(player.location, config.getIntFromExpression("duration", data)) {
             player.removeStatModifier(uuid)
         }
 

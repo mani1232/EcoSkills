@@ -12,8 +12,10 @@ class MagicHandler(private val plugin: EcoPlugin) {
         // Stagger to avoid lag spikes with other plugins? Maybe?
         plugin.scheduler.runTimer(18, 20) {
             for (player in Bukkit.getOnlinePlayers()) {
-                for (type in MagicTypes.values()) {
-                    type.tick(player)
+                plugin.scheduler.run(player.location) {
+                    for (type in MagicTypes.values()) {
+                        type.tick(player)
+                    }
                 }
             }
         }
@@ -25,7 +27,7 @@ class MagicListener(
 ) : Listener {
     @EventHandler
     fun onJoin(event: PlayerJoinEvent) {
-        plugin.scheduler.runLater(2) {
+        plugin.scheduler.runLater(event.player.location, 2) {
             for (type in MagicTypes.values()) {
                 if (type.joinOnFull) {
                     event.player.magic[type] = type.getLimit(event.player)

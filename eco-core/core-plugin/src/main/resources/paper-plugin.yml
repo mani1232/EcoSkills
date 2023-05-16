@@ -3,6 +3,8 @@ version: ${version}
 main: com.willfp.ecoskills.EcoSkillsPlugin
 api-version: 1.19
 
+folia-supported: true
+
 dependencies:
   - name: eco
     required: true
