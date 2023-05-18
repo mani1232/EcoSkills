@@ -1,8 +1,12 @@
 package com.willfp.ecoskills.skills.display
 
 import com.willfp.eco.core.EcoPlugin
+import com.willfp.eco.core.data.keys.PersistentDataKey
+import com.willfp.eco.core.data.keys.PersistentDataKeyType
+import com.willfp.eco.core.data.profile
 import com.willfp.eco.core.sound.PlayableSound
 import com.willfp.eco.util.formatEco
+import com.willfp.eco.util.namespacedKeyOf
 import com.willfp.eco.util.toNiceString
 import com.willfp.ecoskills.actionbar.sendCompatibleActionBarMessage
 import com.willfp.ecoskills.api.event.PlayerSkillXPGainEvent
@@ -12,8 +16,22 @@ import com.willfp.ecoskills.api.getSkillProgress
 import com.willfp.ecoskills.api.getSkillXP
 import org.bukkit.boss.BarColor
 import org.bukkit.boss.BarStyle
+import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
+
+private val xpGainSoundEnabledKey = PersistentDataKey(
+    namespacedKeyOf("ecoskills", "gain_sound_enabled"),
+    PersistentDataKeyType.BOOLEAN,
+    true
+)
+
+fun Player.toggleXPGainSound() {
+    this.profile.write(xpGainSoundEnabledKey, !this.profile.read(xpGainSoundEnabledKey))
+}
+
+val Player.isXPGainSoundEnabled: Boolean
+    get() = this.profile.read(xpGainSoundEnabledKey)
 
 class GainXPDisplay(
     private val plugin: EcoPlugin
@@ -35,7 +53,9 @@ class GainXPDisplay(
             handleActionBar(event)
             handleBossBar(event)
 
-            sound?.playTo(player)
+            if (player.isXPGainSoundEnabled) {
+                sound?.playTo(player)
+            }
         }
     }
 
@@ -53,9 +73,9 @@ class GainXPDisplay(
         player.sendTemporaryBossBar(
             message,
             event.skill.id,
-            this.plugin.configYml.getInt("skills.progress.boss-bar.duration"),
-            BarColor.valueOf(this.plugin.configYml.getString("skills.progress.boss-bar.color").uppercase()),
-            BarStyle.valueOf(this.plugin.configYml.getString("skills.progress.boss-bar.style").uppercase()),
+            this.plugin.configYml.getInt("skills.gain-xp.boss-bar.duration"),
+            BarColor.valueOf(this.plugin.configYml.getString("skills.gain-xp.boss-bar.color").uppercase()),
+            BarStyle.valueOf(this.plugin.configYml.getString("skills.gain-xp.boss-bar.style").uppercase()),
             player.getSkillProgress(skill).coerceIn(0.0..1.0)
         )
     }
